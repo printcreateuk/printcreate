@@ -1,0 +1,955 @@
+ <style>
+     /* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px; /* or whatever maximum width you prefer */
+    width: 100%;
+    margin: 0 auto;
+    padding: 5px 5px; /* Increase padding to give more space around the edges */
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    /* Ensure container handles flex items correctly */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    display: block !important; /* Force display */
+}
+
+.form {
+    margin-bottom: 30px; /* Increase bottom margin to separate from content below */
+    /* Ensure form uses flex for responsive layout */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* Input field styling (Search Bar) */
+.input-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    margin-bottom: 20px; /* Add space below the search bar */
+}
+
+.input {
+    width: 100%;
+    padding: 15px 120px 15px 20px; /* Increased right padding to accommodate button */
+    font-size: 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 30px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.input:focus {
+    border-color: #8a2be2;
+    outline: none;
+    box-shadow: 0 6px 12px rgba(138, 43, 226, 0.2);
+}
+
+.generate-button {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #8a2be2;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 25px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.generate-button:hover {
+    background-color: #7a1bb3;
+}
+
+.generate-button svg {
+    width: 18px;
+    height: 18px;
+}
+
+.input::placeholder {
+    color: #888;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+}
+
+.input:focus::placeholder {
+    color: #bbb;
+}
+
+/* Remove the pulsating effect */
+.input::before {
+    content: none;
+}
+
+@keyframes pulsate {
+    /* Remove this animation if you want to get rid of the pulsating effect entirely */
+}
+
+/* Dropdown Container */
+.dropdown-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px; /* Space between dropdowns */
+    margin-bottom: 30px; /* Space before the button */
+}
+
+/* Dropdown Styling */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    max-width: 600px; /* Optional: Limit max width of dropdown */
+    margin-bottom: 20px; /* Add space below each dropdown */
+}
+
+.dropdown-button {
+    background-color: #f8f8f8;
+    color: #333;
+    border: 2px solid #8a2be2;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    width: auto;
+    margin-bottom: 10px;
+    box-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+    pointer-events: none; /* Disable clicking */
+}
+
+/* Remove hover effects for dropdown buttons */
+.dropdown-button:hover {
+    background-color: #f8f8f8;
+    color: #333;
+}
+
+/* Remove the triangle */
+.triangle {
+    display: none;
+}
+
+:root {
+  --hue: 190deg;
+  --sat: 50%;
+  --blur: 0px;
+}
+
+/* Style for the style options and aspect ratio options container */
+.style-selector, .aspect-ratio-selector {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+  width: 100%;
+}
+
+/* Style for individual options */
+.style-option, .aspect-ratio-option {
+  font-size: 20px;
+  padding: 3px 6px;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.style-option.selected, .aspect-ratio-option.selected {
+  background-color: var(--color-primary);
+  color: var(--color-background);
+}
+
+/* Media query for smaller screens */
+  .style-option, .aspect-ratio-option {
+    font-size: 10px;
+    padding: 2px 4px;
+  }
+
+/* Style for the section headers */
+.section-header {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: var(--text);
+  font-size: 12px;
+}
+
+/* Button Styling */
+.button {
+    background-color: #8a2be2; /* Purple background */
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    font-size: 15px;
+    border-radius: 7px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.3s ease;
+    width: 50%; /* Full width for button */
+    max-width: 200px; /* Fixed width for button */
+    margin: 0 auto; /* Center button */
+}
+
+.button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75px;
+    width: 50px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.4);
+    transform: skewX(-20deg);
+    transition: left 0.5s ease;
+}
+
+.button:hover::before {
+    left: 125%;
+}
+
+.button:hover {
+    background-color: #6a1bb3; /* Darker purple */
+}
+
+.content {
+    margin-top: 20px;
+}
+
+.loading-symbol {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+}
+
+.infinity-loop {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 4px solid transparent;
+    border-top-color: #888888;
+    border-bottom-color: #888888;
+    animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 600px) {
+    .container {
+        padding: 15px;
+    }
+
+    .input {
+        font-size: 14px;
+        padding: 10px;
+        width: 100%; /* Ensure full width on small screens */
+        max-width: 100%; /* Ensure it doesn't exceed the container width */
+        flex-shrink: 1; /* Allow shrinking */
+    }
+
+    .button {
+        font-size: 14px;
+        padding: 10px;
+        max-width: 200px; /* Maintain fixed width for button */
+    }
+
+    .logo img {
+        max-width: 150px;
+    }
+
+    .style-option, .aspect-ratio-option {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
+
+/* Style for generated image */
+.generated-image {
+    max-width: 40%; /* Reduced from 50% */
+    width: auto;
+    height: auto;
+    display: block;
+    margin: 20px auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Add a media query for smaller screens */
+@media (max-width: 600px) {
+    .generated-image {
+        max-width: 80%; /* Reduced from 90% */
+    }
+}
+
+/* Image Library Styles */
+.image-library {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative; /* Add this to make it a positioning context for the buttons */
+    overflow: hidden;
+}
+
+.image-grid {
+    display: flex; /* Change to flex for horizontal layout */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    gap: 20px;
+    padding: 20px;
+    scroll-behavior: smooth; /* For smooth scrolling */
+    -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
+    margin: 0 50px; /* Add horizontal margin to make space for the buttons */
+}
+
+/* Add styles to hide the scrollbar but keep functionality */
+.image-grid::-webkit-scrollbar {
+    display: none;
+}
+
+.image-grid {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.image-item {
+    flex: 0 0 auto; /* Prevent items from growing or shrinking */
+    width: 200px; /* Set a fixed width for each item */
+    height: 200px; /* Set a fixed height for each item */
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.image-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+}
+
+.image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+}
+
+.image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-item:hover .image-overlay {
+    opacity: 1;
+}
+
+.download-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-item:hover .download-button {
+    opacity: 1;
+}
+
+/* Add styles for the scroll buttons */
+.scroll-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(138, 43, 226, 0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: opacity 0.3s ease;
+}
+
+.scroll-left {
+    left: 10px;
+}
+
+.scroll-right {
+    right: 10px;
+}
+
+.image-library:hover .scroll-button {
+    display: flex;
+}
+
+/* Adjust dark mode styles */
+body.dark-mode .image-library {
+    background-color: #333;
+}
+
+body.dark-mode .scroll-button {
+    background-color: rgba(138, 43, 226, 0.7);
+    color: white;
+}
+
+/* Add this CSS for the expanded image view */
+.expanded-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    cursor: pointer;
+}
+
+.expanded-image img {
+    max-width: 90%;
+    max-height: 90%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    border: 2px solid white;
+    border-radius: 10px;
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.dark-mode .container {
+    background-color: #1e1e1e;
+    box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .input {
+    background-color: #333;
+    color: #fff;
+    border: 2px solid #555;
+}
+
+.dark-mode .input:focus {
+    border-color: #8a2be2;
+    box-shadow: 0 6px 12px rgba(138, 43, 226, 0.2);
+}
+
+.dark-mode .dropdown-button {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+}
+
+.dark-mode .dropdown-button:hover {
+    background-color: #444;
+}
+
+.dark-mode .style-option, .dark-mode .aspect-ratio-option {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+}
+
+.dark-mode .style-option:hover, .dark-mode .aspect-ratio-option:hover {
+    background-color: #444;
+}
+
+.dark-mode .style-option.selected, .dark-mode .aspect-ratio-option.selected {
+    background-color: #8a2be2;
+    color: #fff;
+}
+
+.dark-mode .button {
+    background-color: #8a2be2;
+    color: #fff;
+}
+
+.dark-mode .button:hover {
+    background-color: #6a1bb3;
+}
+
+.dark-mode .content {
+    background-color: #1e1e1e;
+}
+
+.dark-mode .generated-image {
+    border: 1px solid #ffffff;
+}
+
+.dark-mode .image-overlay {
+    background-color: rgba(255, 255, 255, 0.7);
+    color: #000;
+}
+
+/* Add these styles */
+.auth-container {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: none;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.auth-form input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.auth-form button {
+    padding: 10px;
+    background-color: #8a2be2;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+.user-info {
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Dark mode styles */
+body.dark-mode .auth-container,
+body.dark-mode .auth-form input {
+    background-color: #333;
+    color: #fff;
+}
+
+body.dark-mode .auth-form input {
+    border-color: #555;
+}
+
+.crop-button {
+    background-color: #8a2be2;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    font-size: 14px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.crop-button:hover {
+    background-color: #7a1bb3;
+}
+
+.crop-options {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.crop-options button {
+    padding: 5px 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.crop-options button:hover {
+    background-color: #e0e0e0;
+}
+
+#applyCrop {
+    background-color: #8a2be2;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#applyCrop:hover {
+    background-color: #7a1bb3;
+}
+
+#cancelCrop {
+    background-color: #8a2be2;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#cancelCrop:hover {
+    background-color: #7a1bb3;
+}
+
+/* Add these styles */
+.crop-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.crop-area {
+    max-width: 90%;
+    max-height: 80%;
+    overflow: hidden;
+}
+
+.crop-controls {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.crop-controls button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 25px;
+    border: none;
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+#applyCrop {
+    background-color: #8a2be2;
+}
+
+#cancelCrop {
+    background-color: #8a2be2;
+}
+
+#applyCrop:hover,
+#cancelCrop:hover {
+    background-color: #7a1bb3;
+}
+
+.crop-instructions {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.crop-shape-controls {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.crop-shape-button {
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 20px;
+    border: none;
+    color: #fff;
+    background-color: #8a2be2;
+    transition: background-color 0.3s ease;
+}
+
+.crop-shape-button:hover,
+.crop-shape-button.active {
+    background-color: #7a1bb3;
+}
+
+.crop-instructions {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #fff;
+    text-align: center;
+}
+
+.spod-customizer {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.spod-customizer.hidden {
+    display: none;
+}
+
+.spod-customizer h3, .spod-customizer h4 {
+    margin-bottom: 20px;
+}
+
+#productTypeSelector, #productCustomizer, #appearanceSelector, #sizeSelector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#productTypeSelector button, #productCustomizer button, #appearanceSelector button, #sizeSelector button {
+    padding: 10px 15px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#productTypeSelector button:hover, #productCustomizer button:hover, #appearanceSelector button:hover, #sizeSelector button:hover {
+    background-color: #e0e0e0;
+}
+
+#createProductButton {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+#createProductButton:hover {
+    background-color: #45a049;
+}
+
+/* General Styles for the dropdown buttons */
+.dropdown-button {
+    background-color: #8a2be2; /* Purple background */
+    color: #fff; /* White text */
+    border: 1px solid #8a2be2; /* Match border with background */
+    padding: 5px 8px;
+    border-radius: 10px;
+    cursor: pointer; /* Change cursor to indicate clickable */
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-button:hover {
+    background-color: #7a1bb3; /* Darker purple on hover */
+}
+
+/* Style options */
+.style-selector, .aspect-ratio-selector {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px; /* Reduced gap for tidiness */
+    margin-top: 10px;
+    width: 100%;
+}
+
+.style-option, .aspect-ratio-option {
+    padding: 3px 6px; /* Adjusted padding */
+    background-color: #e0e0e0; /* Light grey background */
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 6px; /* Rounded corners */
+    color: #333; /* Dark text */
+    font-size: 12px; /* Slightly larger font size */
+    cursor: pointer; /* Indicate clickable */
+    transition: background-color 0.3s ease;
+}
+
+.style-option.selected, .aspect-ratio-option.selected {
+    background-color: #8a2be2; /* Purple for selected */
+    color: #fff; /* White text for selected */
+}
+
+.style-option:hover, .aspect-ratio-option:hover {
+    background-color: #8a2be2; /* Change on hover */
+}
+
+   </style>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrintCreate Integration</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.2.1/fabric.min.js"></script>
+</head>
+<body>
+        </div>
+        <div id="loginForm" class="auth-form hidden">
+            <h2>Log In</h2>
+            <input type="email" id="loginEmail" placeholder="Email" required>
+            <input type="password" id="loginPassword" placeholder="Password" required>
+            <button id="loginButton">Log In</button>
+            <p>Don't have an account? <a href="#" id="showSignup">Sign Up</a></p>
+        </div>
+    </div>
+    <div class="container">
+        <form id="imageForm" class="form">
+            <div class="input-wrapper">
+                <input type="text" id="prompt" name="prompt" class="input" placeholder="" required>
+                <button type="submit" class="generate-button">Generate
+                    <svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14.1274 1.01957V1.01957C14.4612 3.69008 16.5647 5.79356 19.2352 6.12736V6.12736V6.12736C16.5647 6.46118 14.4612 8.56466 14.1274 11.2352V11.2352V11.2352C13.7936 8.56471 11.6901 6.46117 9.01968 6.12733V6.12733V6.12733C11.6901 5.79355 13.7936 3.69001 14.1274 1.01957V1.01957Z" fill="white"/>
+                        <path d="M4.5689 6.01362V6.01362C4.80125 7.87244 6.2654 9.33656 8.12422 9.5689V9.5689V9.5689C6.2654 9.80126 4.80125 11.2654 4.56889 13.1242V13.1242V13.1242C4.33655 11.2654 2.87245 9.80126 1.01368 9.56889H1.01368V9.56889C2.87245 9.33656 4.33655 7.87239 4.5689 6.01362V6.01362Z" fill="white"/>
+                        <path d="M9.67949 13.0102V13.0102C9.85394 14.4058 10.9532 15.5051 12.3488 15.6795V15.6795V15.6795C10.9532 15.854 9.85394 16.9533 9.67949 18.3489V18.3489V18.3489C9.50504 16.9533 8.4058 15.854 7.01023 15.6795V15.6795V15.6795C8.4058 15.5051 9.50505 14.4058 9.67949 13.0102V13.0102Z" fill="white"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="dropdown">
+                <button id="dropdownButton" type="button" class="dropdown-button">
+                    Pick a Style <span class="triangle">&#9662;</span>
+                </button>
+                <div id="dropdownContent" class="style-selector">
+                    <div class="style-option">Vibrant</div>
+                    <div class="style-option">Golden Hour</div>
+                    <div class="style-option">Minimalist</div>
+                    <div class="style-option">Monochrome</div>
+                    <div class="style-option">Abstract</div>
+                    <div class="style-option">Fantasy</div>
+                    <div class="style-option">Pop Art</div>
+                    <div class="style-option">Retro</div>
+                    <div class="style-option">Anime</div>
+                </div>
+            </div>
+
+            <div class="dropdown">
+                <button id="aspectRatioButton" type="button" class="dropdown-button">
+                    Pick an Aspect Ratio <span class="triangle">&#9662;</span>
+                </button>
+                <div id="aspectRatioContent" class="aspect-ratio-selector">
+                    <div class="aspect-ratio-option">Square</div>
+                    <div class="aspect-ratio-option">Portrait</div>
+                    <div class="aspect-ratio-option">Standard</div>
+                    <div class="aspect-ratio-option">Widescreen</div>
+                </div>
+            </div>
+        </form>
+        <div id="userInfo" class="user-info hidden">
+            <p>Welcome, <span id="userEmail"></span>!</p>
+            <p>Tokens remaining: <span id="tokenCount"></span></p>
+            <button id="logoutButton">Log Out</button>
+        </div>
+        <div class="content">
+            <!-- The generated image or loading symbol will appear here -->
+        </div>
+        <button id="cropButton" class="crop-button hidden">Crop Image</button>
+        <div id="cropOptions" class="crop-options hidden">
+            <!-- Crop options will be added here dynamically -->
+        </div>
+        <!-- Add this just after the .content div -->
+        <div class="crop-container hidden">
+            <div class="crop-area">
+                <img id="cropImage" src="" alt="Image to crop">
+            </div>
+            <div class="crop-shape-controls">
+                <button class="crop-shape-button" data-shape="rect">Rectangle</button>
+                <button class="crop-shape-button" data-shape="circle">Circle</button>
+                <button class="crop-shape-button" data-shape="star">Star</button>
+                <button class="crop-shape-button" data-shape="triangle">Triangle</button>
+                <button class="crop-shape-button" data-shape="hexagon">Hexagon</button>
+                <button class="crop-shape-button" data-shape="heart">Heart</button>
+            </div>
+            <div class="crop-controls">
+                <button id="applyCrop">Apply Crop</button>
+                <button id="cancelCrop">Cancel</button>
+            </div>
+  
+    </div>
+
+     {{ 'scripts.js' | asset_url | script_tag }}
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
