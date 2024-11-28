@@ -39,60 +39,31 @@ document.addEventListener('DOMContentLoaded', function() {
         'Steampunk': 'steampunk'
     };
 
-async function fetchFreepikImage(prompt) {
-    try {
-        const contentDiv = document.querySelector('.content');
-        contentDiv.innerHTML = '<div class="loading-symbol"><div class="infinity-loop"></div></div>';
+   async function fetchFreepikImage(prompt) {
+       const requestBody = {
+           prompt: prompt,
+           // other parameters...
+       };
 
-        console.log('Starting fetch request...');
+       try {
+           const response = await fetch('https://ec2-13-60-33-49.eu-north-1.compute.amazonaws.com/generate', {
+               method: 'POST',
+               headers: {
+                   'Content-Type': 'application/json',
+                   'Accept': 'application/json'
+               },
+               body: JSON.stringify(requestBody)
+           });
 
-        const requestBody = {
-            prompt: prompt,
-            negative_prompt: "",
-            guidance_scale: 3.5,
-            image: {
-                size: selectedAspectRatio || "square"
-            },
-            num_inference_steps: 150,
-            num_images: 1,
-            seed: Math.floor(Math.random() * 1000000)
-        };
+           if (!response.ok) {
+               throw new Error(`HTTP error! status: ${response.status}`);
+           }
 
-        // Log the full request details
-        console.log('Making request to:', 'http://13.60.33.49:3000/generate');
-        console.log('Request Body:', JSON.stringify(requestBody, null, 2));
-
-        const response = await fetch('http://13.60.33.49:3000/generate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(requestBody),
-            mode: 'cors'
-        });
-
-        console.log('Response received:', response.status);
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-        }
-
-        const data = await response.json();
-        console.log('Data received:', data);
-
-        if (data.data && data.data.length > 0 && data.data[0].base64) {
-            const imageUrl = `data:image/png;base64,${data.data[0].base64}`;
-            contentDiv.innerHTML = `<img src="${imageUrl}" alt="Generated image" class="generated-image">`;
-        } else {
-            throw new Error('Invalid response format');
-        }
-
-    } catch (error) {
-        console.error('Detailed error:', error);
-        const contentDiv = document.querySelector('.content');
-        contentDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+           const data = await response.json();
+           // Handle the response data...
+       } catch (error) {
+           console.error('Error fetching image:', error);
+         
     }
 }
 
